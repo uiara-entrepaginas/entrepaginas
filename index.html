@@ -1167,32 +1167,6 @@ function openWhoAmI(onDone){
   });
   document.getElementById("meLater").addEventListener("click", function(){ store.meSkipped = true; saveStore(); closeModal(); });
 }
-function homeIconHtml(){
-  var open = !store.homeIconSeen;
-  return '<div class="section-title"><span class="eyebrow">Ícone na tela de início</span></div>'+
-  '<details class="panel hi-panel" id="homeIconBox"'+(open?' open':'')+'><summary class="hi-sum"><img class="hi-thumb" src="icon-512.png" alt="" width="40" height="40"><span><b>Coloque o EntrePáginas na tela do celular</b><span class="muted">Com o ícone verde e dourado</span></span></summary>'+
-  '<div class="hi-body">'+
-  '<div class="hi-step"><span class="hi-n">1</span><div><p><b>Salve o ícone.</b> Segure o dedo sobre a imagem e toque em <b>Salvar nas Fotos</b> (iPhone) ou <b>Baixar imagem</b> (Android).</p>'+
-  '<img class="hi-big" src="icon-512.png" alt="Ícone do EntrePáginas: livro dourado com sete figuras sobre fundo verde" width="160" height="160"></div></div>'+
-  '<div class="hi-step"><span class="hi-n">2</span><div><p><b>No iPhone:</b> abra o app <b>Atalhos</b> → toque em <b>+</b> → <b>Buscar Ações</b> → digite <b>Safari</b> → <b>Abrir URLs</b>. Cole o link do app:</p>'+
-  '<div class="hi-link"><code id="hiUrl">'+esc(APP_LINK)+'</code><button class="btn ghost sm" id="hiCopy" type="button">Copiar link</button></div>'+
-  '<p>Renomeie o atalho para <b>EntrePáginas</b>, toque em <b>compartilhar</b> → <b>Adicionar à Tela de Início</b>. Toque no ícone pequeno → <b>Escolher Foto</b> → escolha o ícone salvo → <b>Adicionar</b>.</p></div></div>'+
-  '<div class="hi-step"><span class="hi-n">3</span><div><p><b>No Android:</b> abra o link no <b>Chrome</b> → menu <b>⋮</b> → <b>Adicionar à tela inicial</b>. Se o ícone sair diferente, ele abre o app do mesmo jeito.</p></div></div>'+
-  '<p class="muted" style="font-size:.78rem;">Prefere o jeito mais rápido? No Safari, toque em compartilhar → <b>Adicionar à Tela de Início</b>. O ícone fica genérico, mas o app funciona igual.</p>'+
-  '</div></details>';
-}
-function wireHomeIcon(c){
-  var box = c.querySelector("#homeIconBox"); if(!box) return;
-  box.addEventListener("toggle", function(){ if(!box.open && !store.homeIconSeen){ store.homeIconSeen = true; saveStore(); } });
-  var cp = c.querySelector("#hiCopy");
-  if(cp) cp.addEventListener("click", function(){
-    var code = c.querySelector("#hiUrl");
-    function ok(){ cp.textContent = "Link copiado ✓"; }
-    function fallback(){ try{ var r = document.createRange(); r.selectNodeContents(code); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); document.execCommand("copy"); ok(); }catch(e){} }
-    try{ if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(APP_LINK).then(ok, fallback); return; } }catch(e){}
-    fallback();
-  });
-}
 function renderInicio(c){
   var nx = nextIncompleteMission();
   var meetingText = BOOK.nextMeeting ? (formatDate(BOOK.nextMeeting.data) + " · " + BOOK.nextMeeting.tema) : "A definir";
@@ -1242,7 +1216,6 @@ function renderInicio(c){
 
   if(unlocked){ html += '<button class="btn ghost" id="quickDiaryBtn" style="margin-top:22px;width:100%;justify-content:center;">'+ICONS.plus+' Registrar uma experiência</button>'; }
   html += reminderPanelHtml();
-  html += homeIconHtml();
 
   c.innerHTML = html;
 
@@ -1256,7 +1229,6 @@ function renderInicio(c){
   var qdb = document.getElementById("quickDiaryBtn");
   if(qdb) qdb.addEventListener("click", function(){ openExperienceWizard(null); });
   document.getElementById("aboutBtn").addEventListener("click", function(){ go("sobre"); });
-  wireHomeIcon(c);
   document.getElementById("changeMe").addEventListener("click", function(){ openWhoAmI(function(){ renderInicio(c); }); });
   if(!myName() && !store.meSkipped && !askedMeThisSession){ askedMeThisSession = true; setTimeout(function(){ if(!document.getElementById("ovl")) openWhoAmI(function(){ if(state.route==="inicio") renderInicio(c); }); }, 350); }
   var ng = document.getElementById("nudgeGo");
